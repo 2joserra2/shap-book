@@ -11,6 +11,28 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Install TinyTeX
+        run: |
+          curl -fsSL https://yihui.org/tinytex/install-unx.sh | sh
+          # Ensure the installation directory exists
+          if [ -d "$HOME/Library/TinyTeX" ]; then
+            echo "TinyTeX installed in $HOME/Library/TinyTeX"
+            sudo mkdir -p /opt/TinyTeX
+            sudo mv "$HOME/Library/TinyTeX" /opt/TinyTeX
+            sudo /opt/TinyTeX/bin/*/tlmgr path add
+          else
+            echo "TinyTeX installation directory not found in $HOME/Library/TinyTeX"
+            ls -la $HOME/Library
+            exit 1
+          fi
+          echo "TinyTeX moved to /opt/TinyTeX"
+
+      - name: Verify TinyTeX installation
+        run: |
+          sudo /opt/TinyTeX/bin/*/tlmgr update --self
+          /opt/TinyTeX/bin/*/tlmgr --version
+          /opt/TinyTeX/bin/*/pdflatex --version
+
       - name: Check out repository
         uses: actions/checkout@v3
 
@@ -33,31 +55,6 @@ jobs:
           pip install jupyter
           pip install -r manuscript/requirements.txt
 
-      - name: Install TinyTeX
-        run: |
-          curl -fsSL https://yihui.org/tinytex/install-unx.sh | sh
-          # Ensure the installation directory exists
-          if [ -d "$HOME/Library/TinyTeX" ]; then
-            echo "TinyTeX installed in $HOME/Library/TinyTeX"
-            sudo mkdir -p /opt/TinyTeX
-            sudo mv "$HOME/Library/TinyTeX" /opt/TinyTeX
-            sudo /opt/TinyTeX/bin/*/tlmgr path add
-          else
-            echo "TinyTeX installation directory not found in $HOME/Library/TinyTeX"
-            ls -la $HOME/Library
-            exit 1
-          fi
-          echo "TinyTeX moved to /opt/TinyTeX"
-          
-      - name: Update tlmgr
-        run: |
-          sudo /opt/TinyTeX/bin/*/tlmgr update --self
-
-      - name: Verify TeX installation
-        run: |
-          /opt/TinyTeX/bin/*/tlmgr --version
-          /opt/TinyTeX/bin/*/pdflatex --version
-
       - name: Render
         env:
           PATH: "/opt/TinyTeX/bin/x86_64-darwin:$PATH"
@@ -74,6 +71,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./manuscript/_book
-
-
-
