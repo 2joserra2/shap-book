@@ -19,7 +19,8 @@ jobs:
             echo "TinyTeX installed in $HOME/Library/TinyTeX"
             sudo mkdir -p /opt/TinyTeX
             sudo mv "$HOME/Library/TinyTeX" /opt/TinyTeX
-            sudo ln -s /opt/TinyTeX/bin/* /usr/local/bin
+            # List the contents of /opt/TinyTeX/bin to verify the correct path
+            ls -la /opt/TinyTeX/bin
           else
             echo "TinyTeX installation directory not found in $HOME/Library/TinyTeX"
             ls -la $HOME/Library
@@ -29,9 +30,19 @@ jobs:
 
       - name: Verify TinyTeX installation
         run: |
-          /opt/TinyTeX/bin/*/tlmgr update --self
-          /opt/TinyTeX/bin/*/tlmgr --version
-          /opt/TinyTeX/bin/*/pdflatex --version
+          TINYTEX_BIN=$(find /opt/TinyTeX/bin -type f -name tlmgr)
+          if [ -z "$TINYTEX_BIN" ]; then
+            echo "tlmgr not found in /opt/TinyTeX/bin"
+            ls -la /opt/TinyTeX/bin
+            exit 1
+          else
+            echo "Using tlmgr from $TINYTEX_BIN"
+            sudo "$TINYTEX_BIN" update --self
+            "$TINYTEX_BIN" --version
+            TINYTEX_DIR=$(dirname "$TINYTEX_BIN")
+            echo "Adding $TINYTEX_DIR to PATH"
+            export PATH="$TINYTEX_DIR:$PATH"
+          fi
 
       - name: Check out repository
         uses: actions/checkout@v3
@@ -63,11 +74,5 @@ jobs:
           git rev-parse --short HEAD > latex/hash.tex
           quarto render --profile leanpub --to pdf
           mv _book/shap.pdf ./
-          quarto render --profile leanpub --to epub
-          mv shap.pdf _book/
+          quarto render --profile lean
 
-      - name: Publish
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./manuscript/_book
