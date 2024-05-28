@@ -36,8 +36,13 @@ jobs:
       - name: Install TinyTeX
         run: |
           curl -fsSL https://yihui.org/tinytex/install-unx.sh | sh
-          sudo mv ~/.TinyTeX /opt/TinyTeX
-          sudo /opt/TinyTeX/bin/*/tlmgr path add
+          if [ -d "$HOME/.TinyTeX" ]; then
+            sudo mv "$HOME/.TinyTeX" /opt/TinyTeX
+            sudo /opt/TinyTeX/bin/*/tlmgr path add
+          else
+            echo "TinyTeX installation directory not found"
+            exit 1
+          fi
         shell: bash
 
       - name: Render
