@@ -29,7 +29,9 @@ jobs:
           echo "TinyTeX moved to /opt/TinyTeX"
 
 
-
+      - name: Update Homebrew
+        run: brew update
+        
       - name: Install Git
         run: brew install git
 
