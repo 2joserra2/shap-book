@@ -28,25 +28,6 @@ jobs:
           fi
           echo "TinyTeX moved to /opt/TinyTeX"
 
-      - name: Verify TinyTeX installation
-        run: |
-          if [ ! -d "/opt/TinyTeX/bin" ]; then
-            echo "Creating /opt/TinyTeX/bin directory"
-            sudo mkdir -p /opt/TinyTeX/bin
-          fi
-          TINYTEX_BIN=$(find /opt/TinyTeX/bin -type f -name tlmgr)
-          if [ -z "$TINYTEX_BIN" ]; then
-            echo "tlmgr not found in /opt/TinyTeX/bin"
-            ls -la /opt/TinyTeX/bin || echo "/opt/TinyTeX/bin is empty"
-            exit 1
-          else
-            echo "Using tlmgr from $TINYTEX_BIN"
-            sudo "$TINYTEX_BIN" update --self
-            "$TINYTEX_BIN" --version
-            TINYTEX_DIR=$(dirname "$TINYTEX_BIN")
-            echo "Adding $TINYTEX_DIR to PATH"
-            export PATH="$TINYTEX_DIR:$PATH"
-          fi
 
       - name: Check out repository
         uses: actions/checkout@v3
