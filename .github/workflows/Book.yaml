@@ -33,7 +33,28 @@ jobs:
           pip install jupyter
           pip install -r manuscript/requirements.txt
 
+      - name: Install TinyTeX
+        run: |
+          curl -fsSL https://yihui.org/tinytex/install-unx.sh | sh
+          if [ -d "$HOME/.TinyTeX" ]; then
+            echo "TinyTeX installed in $HOME/.TinyTeX"
+            sudo mkdir -p /opt/TinyTeX
+            sudo mv "$HOME/.TinyTeX" /opt/TinyTeX
+            sudo /opt/TinyTeX/bin/*/tlmgr path add
+          else
+            echo "TinyTeX installation directory not found in $HOME/.TinyTeX"
+            ls -la $HOME
+            exit 1
+          fi
 
+      - name: Update tlmgr
+        run: |
+          sudo /opt/TinyTeX/bin/*/tlmgr update --self
+
+      - name: Verify TeX installation
+        run: |
+          /opt/TinyTeX/bin/*/tlmgr --version
+          /opt/TinyTeX/bin/*/pdflatex --version
 
       - name: Render
         run: |
@@ -49,4 +70,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./manuscript/_book
+
 
