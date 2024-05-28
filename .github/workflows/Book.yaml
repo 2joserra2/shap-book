@@ -30,7 +30,10 @@ jobs:
 
       - name: Install Git
         run: |
-          git --version || brew install git || sudo apt-get update && sudo apt-get install -y git
+          git --version || brew install git
+          if [ "$(uname)" == "Linux" ]; then
+            sudo apt-get update && sudo apt-get install -y git
+          fi
 
       - name: Check out repository
         uses: actions/checkout@v3
@@ -70,4 +73,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./manuscript/_book
+
 
