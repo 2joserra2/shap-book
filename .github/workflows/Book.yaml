@@ -28,11 +28,10 @@ jobs:
           fi
           echo "TinyTeX moved to /opt/TinyTeX"
 
-      - name: Update Homebrew
-        run: brew update
-
-      - name: Install Git  # Nuevo paso: Instala Git antes de acceder al directorio del manuscrito.
-        run: brew install git
+      - name: Install Git
+        run: |
+          sudo xcode-select --install
+          git --version || brew install git || sudo apt-get update && sudo apt-get install -y git
 
       - name: Check out repository
         uses: actions/checkout@v3
@@ -55,9 +54,6 @@ jobs:
           pip install wheel
           pip install jupyter
           pip install -r manuscript/requirements.txt
-
-      - name: Print PATH  # Nuevo paso: Imprime el PATH para verificar si Git está incluido.
-        run: echo $PATH
 
       - name: Render
         env:
