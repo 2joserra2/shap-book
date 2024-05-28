@@ -28,6 +28,25 @@ jobs:
           fi
           echo "TinyTeX moved to /opt/TinyTeX"
 
+      - name: Verify TinyTeX installation
+        run: |
+          if [ ! -d "/opt/TinyTeX/bin" ]; then
+            echo "Creating /opt/TinyTeX/bin directory"
+            sudo mkdir -p /opt/TinyTeX/bin
+          fi
+          TINYTEX_BIN=$(find /opt/TinyTeX/bin -type f -name tlmgr)
+          if [ -z "$TINYTEX_BIN" ]; then
+            echo "tlmgr not found in /opt/TinyTeX/bin"
+            ls -la /opt/TinyTeX/bin || echo "/opt/TinyTeX/bin is empty"
+            exit 1
+          else
+            echo "Using tlmgr from $TINYTEX_BIN"
+            sudo "$TINYTEX_BIN" update --self
+            "$TINYTEX_BIN" --version
+            TINYTEX_DIR=$(dirname "$TINYTEX_BIN")
+            echo "Adding $TINYTEX_DIR to PATH"
+            export PATH="$TINYTEX_DIR:$PATH"
+          fi
 
       - name: Check out repository
         uses: actions/checkout@v3
@@ -43,5 +62,29 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-  
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: |
+          pip install wheel
+          pip install jupyter
+          pip install -r manuscript/requirements.txt
+
+      - name: Render
+        env:
+          PATH: "/opt/TinyTeX/bin/x86_64-darwin:$PATH"
+        run: |
+          cd manuscript
+          git rev-parse --short HEAD > latex/hash.tex
+          quarto render --profile leanpub --to pdf
+          mv _book/shap.pdf ./
+          quarto render --profile leanpub --to epub
+          mv shap.pdf _book/
+
+      - name: Publish
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./manuscript/_book
+
 
