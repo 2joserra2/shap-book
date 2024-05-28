@@ -33,17 +33,7 @@ jobs:
           pip install jupyter
           pip install -r manuscript/requirements.txt
 
-      - name: Install TinyTeX
-        run: |
-          curl -fsSL https://yihui.org/tinytex/install-unx.sh | sh
-          if [ -d "$HOME/.TinyTeX" ]; then
-            sudo mv "$HOME/.TinyTeX" /opt/TinyTeX
-            sudo /opt/TinyTeX/bin/*/tlmgr path add
-          else
-            echo "TinyTeX installation directory not found"
-            exit 1
-          fi
-        shell: bash
+
 
       - name: Render
         run: |
