@@ -30,9 +30,8 @@ jobs:
 
       - name: Install Git
         run: |
-          git --version || brew install git
-          if [ "$(uname)" == "Linux" ]; then
-            sudo apt-get update && sudo apt-get install -y git
+          if ! command -v git &> /dev/null; then
+            brew install git
           fi
 
       - name: Check out repository
@@ -62,6 +61,10 @@ jobs:
           PATH: "/opt/TinyTeX/bin/x86_64-darwin:$PATH"
         run: |
           cd manuscript
+          if ! command -v git &> /dev/null; then
+            echo "Git is not installed"
+            exit 1
+          fi
           git rev-parse --short HEAD > latex/hash.tex
           quarto render --profile leanpub --to pdf
           mv _book/shap.pdf ./
@@ -73,5 +76,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./manuscript/_book
-
-
