@@ -46,18 +46,14 @@ jobs:
           mv shap.pdf _book/
 
       - name: Show logs and files on failure
-        if: failure()
+        if: always()
         run: |
-          echo "Rendering failed. Showing contents of manuscript directory:"
+          echo "Listing manuscript directory contents:"
           ls -la manuscript
-          echo "Displaying log files, if any:"
+          echo "Listing manuscript/_book directory contents:"
+          ls -la manuscript/_book
+          echo "Finding and displaying log files:"
           find manuscript -name "*.log" -exec cat {} +
-          if [ -f manuscript/index.log ]; then
-            echo "Displaying contents of index.log:"
-            cat manuscript/index.log
-          else
-            echo "index.log not found."
-          fi
 
       - name: Publish
         if: success()
@@ -65,4 +61,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./manuscript/_book
-
