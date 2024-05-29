@@ -19,6 +19,10 @@ jobs:
         with:
           tinytex: true
 
+      - name: Install system dependencies
+        run: |
+          brew install cmake libomp
+
       - name: Install Python and Deps
         uses: actions/setup-python@v4
         with:
