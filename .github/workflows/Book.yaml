@@ -35,6 +35,12 @@ jobs:
           pip install jupyter
           pip install -r manuscript/requirements.txt 
 
+      - name: Remove index.log
+        if: always()  # Este paso se ejecutará siempre, independientemente del resultado anterior
+        run: |
+          rm -f manuscript/index.log  # Elimina el archivo index.log si existe
+
+
       - name: Render
         continue-on-error: true
         run: |
@@ -45,15 +51,6 @@ jobs:
           quarto render --profile leanpub --to epub
           mv shap.pdf _book/
 
-      - name: Show logs and files on failure
-        if: always()
-        run: |
-          echo "Listing manuscript directory contents:"
-          ls -la manuscript
-          echo "Listing manuscript/_book directory contents:"
-          ls -la manuscript/_book
-          echo "Finding and displaying log files:"
-          find manuscript -name "*.log" -exec cat {} +
 
       - name: Publish
         if: success()
