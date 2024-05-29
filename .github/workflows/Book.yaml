@@ -25,10 +25,12 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
 
-      -	run: pip install wheel
-      - run: pip install jupyter
-      - run: pip install -r manuscript/requirements.txt
-
+      - name: Install Python dependencies
+        run: |
+          pip install wheel
+          pip install jupyter
+          pip install -r manuscript/requirements.txt 
+          
       - name: Render
         run: |
           cd manuscript
