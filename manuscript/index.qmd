@@ -18,5 +18,5 @@ I agree with some of these criticisms.
 In the realm of interpretable machine learning, there's no perfect method; we must learn to work within constraints, which this book also addresses.
 However, SHAP excels in many areas: it can work with any model, it's modular in building global interpretations, and it has a vast ecosystem of SHAP adaptations.
 
-As you can see, my relationship with SHAP is a mix of admiration and frustration -- perhaps a balanced standpoint for writing about SHAP.
+As you can see, my relationship with SHAP is a mix of admiration and frustration; perhaps a balanced standpoint for writing about SHAP.
 I don't intend to overhype it, but I believe it's a beneficial tool worth understanding.
