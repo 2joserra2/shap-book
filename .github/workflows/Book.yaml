@@ -35,12 +35,12 @@ jobs:
           pip install jupyter
           pip install -r manuscript/requirements.txt 
 
-      - name: Remove index.log
+      - name: Clean LaTeX files
         if: always()  # Este paso se ejecutará siempre, independientemente del resultado anterior
         run: |
-          rm -f manuscript/index.log  # Elimina el archivo index.log si existe
-
-
+          sed -i '' -e 's/[^[:print:]\t]//g' manuscript/index.tex
+          sed -i '' -e 's/[^[:print:]\t]//g' manuscript/index.log
+          
       - name: Render
         continue-on-error: true
         run: |
@@ -50,8 +50,6 @@ jobs:
           mv _book/shap.pdf ./
           quarto render --profile leanpub --to epub
           mv shap.pdf _book/
-
-
       - name: Publish
         if: success()
         uses: peaceiris/actions-gh-pages@v3
