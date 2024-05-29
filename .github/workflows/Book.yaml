@@ -35,20 +35,16 @@ jobs:
           pip install jupyter
           pip install -r manuscript/requirements.txt 
 
-      - name: Clean LaTeX files
-        if: always()  # Este paso se ejecutará siempre, independientemente del resultado anterior
-        run: |
-          sed -i '' -e 's/[^[:print:]\t]//g' manuscript/index.log
-          
       - name: Render
         continue-on-error: true
         run: |
           cd manuscript
           git rev-parse --short HEAD > latex/hash.tex
-          quarto render --profile leanpub --to pdf
+          quarto render --profile leanpub --to pdf 2> error.log  # Redirige la salida de error a error.log
           mv _book/shap.pdf ./
-          quarto render --profile leanpub --to epub
+          quarto render --profile leanpub --to epub 2>> error.log  # Añade la salida de error al final de error.log
           mv shap.pdf _book/
+
       - name: Publish
         if: success()
         uses: peaceiris/actions-gh-pages@v3
