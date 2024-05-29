@@ -28,6 +28,10 @@ jobs:
           fi
           echo "TinyTeX moved to /opt/TinyTeX"
 
+      - name: Install Xcode Command Line Tools
+        run: |
+          xcode-select --install || echo "Xcode Command Line Tools are already installed"
+
       - name: Install Git
         run: |
           if ! command -v git &> /dev/null; then
@@ -76,3 +80,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./manuscript/_book
+
