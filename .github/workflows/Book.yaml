@@ -34,8 +34,9 @@ jobs:
           pip install wheel
           pip install jupyter
           pip install -r manuscript/requirements.txt 
-          
+
       - name: Render
+        continue-on-error: true
         run: |
           cd manuscript
           git rev-parse --short HEAD > latex/hash.tex
@@ -44,9 +45,24 @@ jobs:
           quarto render --profile leanpub --to epub
           mv shap.pdf _book/
 
+      - name: Show logs and files on failure
+        if: failure()
+        run: |
+          echo "Rendering failed. Showing contents of manuscript directory:"
+          ls -la manuscript
+          echo "Displaying log files, if any:"
+          find manuscript -name "*.log" -exec cat {} +
+          if [ -f manuscript/index.log ]; then
+            echo "Displaying contents of index.log:"
+            cat manuscript/index.log
+          else
+            echo "index.log not found."
+          fi
+
       - name: Publish
+        if: success()
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./manuscript/_book
-   
+
