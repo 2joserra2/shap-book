@@ -38,7 +38,6 @@ jobs:
       - name: Clean LaTeX files
         if: always()  # Este paso se ejecutará siempre, independientemente del resultado anterior
         run: |
-          sed -i '' -e 's/[^[:print:]\t]//g' manuscript/index.tex
           sed -i '' -e 's/[^[:print:]\t]//g' manuscript/index.log
           
       - name: Render
